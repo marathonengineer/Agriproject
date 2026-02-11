@@ -14,12 +14,19 @@ PIXEL_TO_CM2 = None     # example: 0.0025 if 400 px = 1 cm^2
 
 results = []
 
-for img_path in glob.glob(os.path.join(IMAGE_DIR, "*.png")):
-    base = os.path.basename(img_path).replace(".png", "")
+# Handle both png and jpg
+image_extensions = ["*.png", "*.jpg", "*.jpeg"]
+image_files = []
+for ext in image_extensions:
+    image_files.extend(glob.glob(os.path.join(IMAGE_DIR, ext)))
+
+for img_path in image_files:
+    filename = os.path.basename(img_path)
+    base, _ = os.path.splitext(filename)
     mask_path = os.path.join(MASK_DIR, base + "_mask.png")
 
     if not os.path.exists(mask_path):
-        print(f"Missing mask for {base}, skipping.")
+        print(f"Missing mask for {base} (expected: {os.path.basename(mask_path)}), skipping.")
         continue
 
     metrics = analyze_single_plant(

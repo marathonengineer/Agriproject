@@ -14,11 +14,7 @@ To run the analysis using Docker:
 2.  **Run the Container**:
     Mount your local `data` directory to `/app/data` in the container.
     ```bash
-    # Windows (PowerShell)
-    docker run -it -v "${PWD}/plantcv_project/data:/app/data" plantcv-app
-
-    # Linux/Mac
-    docker run -it -v "$(pwd)/plantcv_project/data:/app/data" plantcv-app
+    docker run --rm -it -v "${PWD}:/app" plantcv-app bash
     ```
 
 3.  **Run Analysis**:
@@ -26,6 +22,16 @@ To run the analysis using Docker:
     ```bash
     python run_analysis.py
     ```
+4.  **Run In A Single Step**:
+    ```bash
+    docker run --rm -v "${PWD}:/app" plantcv-app python run_analysis.py
+    ```
+5.  **View Results**:
+    The results will be saved to `plant_traits.csv` in the container.
+    ```bash
+    cat plant_traits.csv
+    ```
+
 
 ## Data Structure
 

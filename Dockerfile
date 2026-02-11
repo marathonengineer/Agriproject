@@ -11,9 +11,11 @@ RUN apt-get update && apt-get install -y \
     bash \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /app
+COPY requirements.txt /app/
 
 RUN pip install --upgrade pip
-RUN pip install plantcv opencv-python pandas scikit-image matplotlib
+RUN pip install -r requirements.txt
+
+COPY . /app
 
 CMD ["bash"]

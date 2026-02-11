@@ -2,16 +2,20 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
-import plantcv as pcv
+import plantcv.plantcv as pcv
 
 def load_image_and_mask(image_path, mask_path):
     img, path, filename = pcv.readimage(image_path)
     mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-    mask = np.where(mask > 127, 255, 0).astype(np.uint8)
+
+    if np.max(mask) == 1:
+        mask = (mask * 255).astype(np.uint8)
+    else:
+        mask = np.where(mask > 127, 255, 0).astype(np.uint8)
     return img, mask
 
 def compute_leaf_color(img, mask):
-    color_stats = pcv.analyze_color(img, mask, hist_plot_type=None)
+
     mean_green = float(np.mean(img[:, :, 1][mask == 255]))
     return mean_green
 
@@ -58,10 +62,13 @@ def analyze_single_plant(image_path, mask_path, pixel_to_cm=None, pixel_to_cm2=N
     curl_index = compute_curl_index(mask)
     plant_height = compute_plant_height(mask, pixel_to_cm)
 
+    area_unit = "cm2" if pixel_to_cm2 else "pixels"
+    height_unit = "cm" if pixel_to_cm else "pixels"
+
     return {
         "image": os.path.basename(image_path),
         "leaf_green_mean": leaf_color,
-        "leaf_area": leaf_area,
+        f"leaf_area_{area_unit}": leaf_area,
         "curl_index": curl_index,
-        "plant_height": plant_height
+        f"plant_height_{height_unit}": plant_height
     }
